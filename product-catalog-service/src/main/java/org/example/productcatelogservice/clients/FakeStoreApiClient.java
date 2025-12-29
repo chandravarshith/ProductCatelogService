@@ -71,7 +71,7 @@ public class FakeStoreApiClient {
                 );
 
         if(isValidResponse(fakeStoreProductDtoResponseEntity,
-                FakeStoreProductDto.class, HttpStatusCode.valueOf(201))){
+                FakeStoreProductDto.class, HttpStatusCode.valueOf(200))){
             return fakeStoreProductDtoResponseEntity.getBody();
         }
 
