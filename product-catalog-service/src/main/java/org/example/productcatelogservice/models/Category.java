@@ -1,10 +1,15 @@
 package org.example.productcatelogservice.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import java.util.List;
 
@@ -15,6 +20,9 @@ public class Category extends BaseClass {
     private String name;
     private String description;
 
-    @OneToMany(mappedBy = "category")
+    @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
+    @Fetch(FetchMode.SELECT)
+    @BatchSize(size=3)
+//    @JsonBackReference
     private List<Product> products;
 }
