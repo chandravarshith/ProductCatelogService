@@ -40,7 +40,19 @@ public class StorageProductService implements IProductService {
     @Override
     public Product replaceProduct(Long id, Product product) {
         Optional<Product> optionalProduct=productRepository.findById(id);
-        if(!id.equals(product.getId()) || optionalProduct.isEmpty()) return null;
+        if(!id.equals(product.getId()) || optionalProduct.isEmpty()) {
+            return null;
+        }
         return this.productRepository.save(product);
+    }
+
+    @Override
+    public Product removeProduct(Long id) {
+        Optional<Product> optionalProduct=productRepository.findById(id);
+        if(optionalProduct.isEmpty()){
+            return null;
+        }
+        this.productRepository.delete(optionalProduct.get());
+        return optionalProduct.get();
     }
 }

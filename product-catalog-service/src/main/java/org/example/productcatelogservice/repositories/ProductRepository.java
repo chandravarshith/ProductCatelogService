@@ -12,7 +12,9 @@ import java.util.Optional;
 public interface ProductRepository extends JpaRepository<Product, Long> {
     Product save(Product product);
 
-    Optional<Product> findById(Long aLong);
+    void delete(Product product);
+
+    Optional<Product> findById(Long id);
 
     List<Product> findAll();
 

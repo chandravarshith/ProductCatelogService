@@ -97,6 +97,23 @@ public class FakeStoreApiClient {
         return null;
     }
 
+    public FakeStoreProductDto removeFakeStoreProduct(Long id) {
+        ResponseEntity<FakeStoreProductDto> fakeStoreProductDtoResponseEntity =
+                requestForEntity(
+                        HttpMethod.DELETE,
+                        "https://fakestoreapi.com/products/{id}",
+                        null,
+                        FakeStoreProductDto.class,
+                        id
+                );
+        if(isValidResponse(fakeStoreProductDtoResponseEntity,
+                FakeStoreProductDto.class, HttpStatusCode.valueOf(200))) {
+            return fakeStoreProductDtoResponseEntity.getBody();
+        }
+
+        return null;
+    }
+
     private <T> boolean isValidResponse(ResponseEntity<T> responseEntity, Class<T> responseType, HttpStatusCode happyStatusCode) {
         if(responseEntity.getStatusCode().equals(happyStatusCode)
             && responseEntity.hasBody()){

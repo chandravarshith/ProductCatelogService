@@ -62,6 +62,15 @@ public class FakeStoreProductService implements IProductService {
         return null;
     }
 
+    @Override
+    public Product removeProduct(Long id) {
+        FakeStoreProductDto fakeStoreProductDto = fakeStoreApiClient.removeFakeStoreProduct(id);
+        if(fakeStoreProductDto != null) {
+            return from(fakeStoreProductDto);
+        }
+        return null;
+    }
+
     private Product from(FakeStoreProductDto fakeStoreProductDto) {
         Product product = new Product();
         product.setId(fakeStoreProductDto.getId());
