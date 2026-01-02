@@ -23,6 +23,6 @@ public class Category extends BaseClass {
     @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
     @Fetch(FetchMode.SELECT)
     @BatchSize(size=3)
-//    @JsonBackReference
+    @JsonBackReference
     private List<Product> products;
 }

@@ -1,6 +1,9 @@
 package org.example.productcatelogservice.repositories;
 
 import org.example.productcatelogservice.models.Product;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -26,4 +29,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     @Query("select p.description from Product p where p.id = :id")
     String findProductDescriptionById(Long id);
+
+    Page<Product> findByNameContainingIgnoreCase(String query, Pageable pageable);
 }

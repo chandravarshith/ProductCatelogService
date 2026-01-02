@@ -1,8 +1,7 @@
 package org.example.userauthenticationservice.controllers;
 
-import org.example.userauthenticationservice.dtos.LoginRequestDto;
-import org.example.userauthenticationservice.dtos.SignupRequestDto;
-import org.example.userauthenticationservice.dtos.UserDto;
+import org.antlr.v4.runtime.misc.Pair;
+import org.example.userauthenticationservice.dtos.*;
 import org.example.userauthenticationservice.exceptions.InvalidPasswordException;
 import org.example.userauthenticationservice.exceptions.UserExistException;
 import org.example.userauthenticationservice.exceptions.UserNotRegisteredException;
@@ -10,6 +9,7 @@ import org.example.userauthenticationservice.models.Role;
 import org.example.userauthenticationservice.models.User;
 import org.example.userauthenticationservice.services.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -45,8 +45,11 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<UserDto> login(@RequestBody LoginRequestDto loginRequestDto) {
         try{
-            User user = this.authService.login(loginRequestDto.getEmail(), loginRequestDto.getPassword());
-            return new ResponseEntity<>(from(user), HttpStatus.OK);
+            Pair<User, String> response = this.authService.login(loginRequestDto.getEmail(), loginRequestDto.getPassword());
+            String token = response.b;
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Auth", token);
+            return ResponseEntity.status(HttpStatus.OK).headers(headers).body(from(response.a));
         }catch (UserNotRegisteredException ex){
             throw new UserNotRegisteredException(ex.getMessage());
         }catch (InvalidPasswordException ex){
@@ -54,14 +57,33 @@ public class AuthController {
         }
     }
 
-//    public ResponseEntity<>
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(@RequestBody LogoutRequestDto logoutRequestDto) {
+        Boolean isLoggedOut = this.authService.logout(logoutRequestDto.getUserId(), logoutRequestDto.getToken());
+        if(isLoggedOut){
+            return ResponseEntity.status(HttpStatus.OK).body("Logout Successful");
+        }
+        else{
+            return ResponseEntity.status(HttpStatus.OK).body("Logout Failed, No Active Session");
+        }
+    }
+
+    @PostMapping("/validateToken")
+    private ResponseEntity<String> validateToken(@RequestBody ValidateTokenRequestDto validateTokenRequestDto){
+        Boolean isValid = this.authService.validateToken(validateTokenRequestDto.getToken(), validateTokenRequestDto.getUserId());
+        if(isValid){
+            return ResponseEntity.ok().body("Token validated successfully");
+        }
+        else  {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
+        }
+    }
 
     private UserDto from(User user) {
         UserDto userDto = new UserDto();
         userDto.setId(user.getId());
         userDto.setEmail(user.getEmail());
         userDto.setName(user.getName());
-        userDto.setStatus(user.getStatus().name());
         userDto.setRoles(new ArrayList<>());
         for(Role role : user.getRoles()){
             userDto.getRoles().add(role);

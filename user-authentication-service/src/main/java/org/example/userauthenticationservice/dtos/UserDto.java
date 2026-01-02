@@ -12,6 +12,5 @@ public class UserDto {
     private Long id;
     private String email;
     private String name;
-    private String status;
     private List<Role> roles;
 }

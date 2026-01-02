@@ -19,7 +19,7 @@ public class Product extends BaseClass {
     private String imageUrl;
 
     @ManyToOne(cascade = CascadeType.ALL)
-//    @JsonManagedReference
+    @JsonManagedReference
     private Category category;
 
     // Any Business fields
