@@ -1,20 +1,28 @@
 package org.example.productcatelogservice.services;
 
+import org.example.productcatelogservice.dtos.UserDto;
 import org.example.productcatelogservice.models.Product;
 import org.example.productcatelogservice.repositories.ProductRepository;
+import org.example.productcatelogservice.utils.RestTemplateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
-@Primary
+//@Primary
 public class StorageProductService implements IProductService {
 
     @Autowired
     private ProductRepository productRepository;
+
+    @Autowired
+    private RestTemplateUtil restTemplateUtil;
 
     @Override
     public Product getProductById(Long id) {
@@ -53,6 +61,28 @@ public class StorageProductService implements IProductService {
             return null;
         }
         this.productRepository.delete(optionalProduct.get());
+        return optionalProduct.get();
+    }
+
+    @Override
+    public Product getDetailsBasedOnUserRole(Long productId, Long userId) {
+        Optional<Product> optionalProduct=productRepository.findById(productId);
+        if(optionalProduct.isEmpty()) return null;
+
+        ResponseEntity<UserDto> userDtoResponseEntity = this.restTemplateUtil.requestForEntity(
+                HttpMethod.GET,
+                "http://user-authentication-service/users/{userId}",
+                null,
+                UserDto.class,
+                userId
+        );
+
+        if(!this.restTemplateUtil.isValidResponse(userDtoResponseEntity,
+                UserDto.class, HttpStatusCode.valueOf(200))){
+            return null;
+        }
+
+        System.out.println(userDtoResponseEntity.getBody().getEmail());
         return optionalProduct.get();
     }
 }

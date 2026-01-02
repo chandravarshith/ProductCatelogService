@@ -1,4 +1,4 @@
-package org.example.paymentservice.config;
+package org.example.paymentservice.configurations;
 
 import com.razorpay.RazorpayClient;
 import com.razorpay.RazorpayException;

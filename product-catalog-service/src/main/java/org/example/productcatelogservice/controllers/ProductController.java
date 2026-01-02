@@ -16,14 +16,27 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@RequestMapping("/products")
 @RestController
 public class ProductController {
 
     @Autowired
-//    @Qualifier("fakeStoreProductService")
+    @Qualifier("fakeStoreProductService")
     private IProductService productService;
 
-    @GetMapping("/products/{id}")
+    @GetMapping("/{productId}/{userId}")
+    public ResponseEntity<ProductDto> getProductDetailsBasedOnUserRole(
+            @PathVariable("productId") Long productId,
+            @PathVariable("userId") Long userId)
+    {
+        Product product = productService.getDetailsBasedOnUserRole(productId, userId);
+        if(product == null) {
+            throw new RuntimeException("Something went wrong");
+        }
+        return ResponseEntity.ok(from(product));
+    }
+
+    @GetMapping("/{id}")
     public ResponseEntity<ProductDto> getProductById(@PathVariable("id") Long productId) {
         if (productId <= 0) {
             throw new IllegalArgumentException("Please pass product id > 0");
@@ -39,7 +52,7 @@ public class ProductController {
         return new ResponseEntity<>(productDto, headers, HttpStatus.OK);
     }
 
-    @GetMapping("/products")
+    @GetMapping
     public ResponseEntity<List<ProductDto>> getAllProducts() {
         List<Product> products = productService.getAllProducts();
         if(products == null) {
@@ -52,7 +65,7 @@ public class ProductController {
         return new ResponseEntity<>(productDtos, HttpStatus.OK);
     }
 
-    @PostMapping("/products")
+    @PostMapping
     public ResponseEntity<ProductDto> createProduct(@RequestBody ProductDto inputProductDto) {
         Product product = productService.createProduct(from(inputProductDto));
         if(product == null) {
@@ -61,7 +74,7 @@ public class ProductController {
         return new ResponseEntity<>(from(product), HttpStatus.CREATED);
     }
 
-    @PutMapping("/products/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<ProductDto> updateProduct(@PathVariable("id") Long id, @RequestBody ProductDto inputProductDto) {
         Product product = productService.replaceProduct(id, from(inputProductDto));
         if(product == null) {

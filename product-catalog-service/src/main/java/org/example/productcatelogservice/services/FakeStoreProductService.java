@@ -71,6 +71,11 @@ public class FakeStoreProductService implements IProductService {
         return null;
     }
 
+    @Override
+    public Product getDetailsBasedOnUserRole(Long productId, Long userId) {
+        return null;
+    }
+
     private Product from(FakeStoreProductDto fakeStoreProductDto) {
         Product product = new Product();
         product.setId(fakeStoreProductDto.getId());
